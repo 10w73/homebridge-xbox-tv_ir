@@ -417,16 +417,6 @@ class XBOXDEVICE {
 			})
 			.onSet(async (state) => {
 				try {
-					const command = 'irsend -# 3 SEND_ONCE xboxOne KEY_ON';
-					exec(command, (error, stdout, stderr) => {
-					  if (error) {
-					    console.error(`exec error: ${error}`);
-					    return;
-					  }
-					  console.log(`stdout: ${stdout}`);
-					  console.error(`stderr: ${stderr}`);
-					});
-
 					const logInfo = this.disableLogInfo || this.firstRun ? false : this.log(`Device: ${this.host} ${accessoryName}, set Discovery Mode: ${state ? 'Always Discoverable' : 'Not Discoverable'}`);
 				} catch (error) {
 					this.log.error(`Device: ${this.host} ${accessoryName}, set Discovery Mode error: ${error}`);
@@ -441,6 +431,15 @@ class XBOXDEVICE {
 			})
 			.onSet(async (state) => {
 				try {
+					const command = 'echo "irsend -# 3 SEND_ONCE xboxOne KEY_ON" > hxtvir_pipe';
+					exec(command, (error, stdout, stderr) => {
+					  if (error) {
+					    console.error(`exec error: ${error}`);
+					    return;
+					  }
+					  console.log(`stdout: ${stdout}`);
+					  console.error(`stderr: ${stderr}`);
+					});
 					const setPower = state ? await this.xboxLocalApi.powerOn() : await this.xboxLocalApi.powerOff();
 					const logInfo = this.disableLogInfo || this.firstRun ? false : this.log(`Device: ${this.host} ${accessoryName}, set Power: ${state ? 'ON' : 'OFF'}`);
 				} catch (error) {
@@ -769,7 +768,7 @@ class XBOXDEVICE {
 		const possibleInputsCount = 90 - this.services.length;
 		const maxInputsCount = inputsCount >= possibleInputsCount ? possibleInputsCount : inputsCount;
 		for (let i = 0; i < maxInputsCount; i++) {
-			//get input 
+			//get input
 			const input = inputs[i];
 
 			//get input reference
@@ -860,7 +859,7 @@ class XBOXDEVICE {
 				//get sensor
 				const sensorInput = sensorInputs[i];
 
-				//get sensor name		
+				//get sensor name
 				const sensorInputName = sensorInput.name;
 
 				//get sensor reference
