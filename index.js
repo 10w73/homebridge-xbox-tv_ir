@@ -10,6 +10,8 @@ const CONSTANS = require('./src/constans.json');
 const PLUGIN_NAME = 'homebridge-xbox-tv';
 const PLATFORM_NAME = 'XboxTv';
 
+const { exec } = require('child_process');
+
 let Accessory, Characteristic, Service, Categories, UUID;
 
 module.exports = (api) => {
@@ -415,6 +417,16 @@ class XBOXDEVICE {
 			})
 			.onSet(async (state) => {
 				try {
+					const command = 'irsend -# 3 SEND_ONCE xboxOne KEY_ON';
+					exec(command, (error, stdout, stderr) => {
+					  if (error) {
+					    console.error(`exec error: ${error}`);
+					    return;
+					  }
+					  console.log(`stdout: ${stdout}`);
+					  console.error(`stderr: ${stderr}`);
+					});
+
 					const logInfo = this.disableLogInfo || this.firstRun ? false : this.log(`Device: ${this.host} ${accessoryName}, set Discovery Mode: ${state ? 'Always Discoverable' : 'Not Discoverable'}`);
 				} catch (error) {
 					this.log.error(`Device: ${this.host} ${accessoryName}, set Discovery Mode error: ${error}`);
