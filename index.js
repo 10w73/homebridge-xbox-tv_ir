@@ -11,7 +11,7 @@ const PLUGIN_NAME = 'homebridge-xbox-tv';
 const PLATFORM_NAME = 'XboxTv';
 
 const { exec } = require('child_process');
-const ir_command_xboxOne_on = 'echo "irsend -# 3 SEND_ONCE xboxOne KEY_ON" > /pipes/hxtvir_pipe';
+const ir_command_xboxOne_on = 'echo "irsend -# 3 SEND_ONCE xboxOne KEY_ON" > /homebridge/pipes/hxtvir_pipe';
 
 let Accessory, Characteristic, Service, Categories, UUID;
 
@@ -432,14 +432,16 @@ class XBOXDEVICE {
 			})
 			.onSet(async (state) => {
 				try {
-					exec(ir_command_xboxOne_on, (error, stdout, stderr) => {
-					  if (error) {
-					    console.error(`exec error: ${error}`);
-					    return;
-					  }
-					  console.log(`stdout: ${stdout}`);
-					  console.error(`stderr: ${stderr}`);
-					});
+					if (state) {
+						exec(ir_command_xboxOne_on, (error, stdout, stderr) => {
+							if (error) {
+								console.error(`exec error: ${error}`);
+								return;
+							}
+							console.log(`stdout: ${stdout}`);
+							console.error(`stderr: ${stderr}`);
+						});
+					}
 					const setPower = state ? await this.xboxLocalApi.powerOn() : await this.xboxLocalApi.powerOff();
 					const logInfo = this.disableLogInfo || this.firstRun ? false : this.log(`Device: ${this.host} ${accessoryName}, set Power: ${state ? 'ON' : 'OFF'}`);
 				} catch (error) {
