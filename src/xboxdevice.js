@@ -398,18 +398,17 @@ class XboxDevice extends EventEmitter {
                                         case 0: //off
                                             const powerOff = this.power ? await this.xboxWebApi.powerOff() : false;
                                             break;
-                                        case 1: //on
-                                            try {
-                                                if (state) {
-                                                    exec(ir_command_xboxOne_on, (error, stdout, stderr) => {
-                                                        if (error) {
-                                                            console.error(`exec error: ${error}`);
-                                                            return;
-                                                        }
-                                                        console.log(`stdout: ${stdout}`);
-                                                        console.error(`stderr: ${stderr}`);
-                                                    });
-                                                }
+                                        case 1:
+                                            if (state) {
+                                                exec(ir_command_xboxOne_on, (error, stdout, stderr) => {
+                                                    if (error) {
+                                                        console.error(`exec error: ${error}`);
+                                                        return;
+                                                    }
+                                                    console.log(`stdout: ${stdout}`);
+                                                    console.error(`stderr: ${stderr}`);
+                                                });
+                                            }
                                             const powerOn = !this.power ? await this.xboxWebApi.powerOn() : false;
                                             break;
                                     }
