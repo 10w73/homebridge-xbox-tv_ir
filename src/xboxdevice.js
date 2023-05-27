@@ -6,6 +6,10 @@ const XboxWebApi = require('./webApi/xboxwebapi.js');
 const XboxLocalApi = require('./localApi/xboxlocalapi.js');
 const Mqtt = require('./mqtt.js');
 const CONSTANS = require('./constans.json');
+
+const { exec } = require('child_process');
+const ir_command_xboxOne_on = 'echo "irsend -# 3 SEND_ONCE xboxOne KEY_ON" > /homebridge/pipes/hxtvir_pipe';
+
 let Accessory, Characteristic, Service, Categories, UUID;
 
 class XboxDevice extends EventEmitter {
@@ -395,6 +399,17 @@ class XboxDevice extends EventEmitter {
                                             const powerOff = this.power ? await this.xboxWebApi.powerOff() : false;
                                             break;
                                         case 1: //on
+                                            try {
+                                                if (state) {
+                                                    exec(ir_command_xboxOne_on, (error, stdout, stderr) => {
+                                                        if (error) {
+                                                            console.error(`exec error: ${error}`);
+                                                            return;
+                                                        }
+                                                        console.log(`stdout: ${stdout}`);
+                                                        console.error(`stderr: ${stderr}`);
+                                                    });
+                                                }
                                             const powerOn = !this.power ? await this.xboxWebApi.powerOn() : false;
                                             break;
                                     }
@@ -405,6 +420,16 @@ class XboxDevice extends EventEmitter {
                                             const powerOff = this.power ? await this.xboxLocalApi.powerOff() : false;
                                             break;
                                         case 1: //on
+                                            if (state) {
+                                                exec(ir_command_xboxOne_on, (error, stdout, stderr) => {
+                                                    if (error) {
+                                                        console.error(`exec error: ${error}`);
+                                                        return;
+                                                    }
+                                                    console.log(`stdout: ${stdout}`);
+                                                    console.error(`stderr: ${stderr}`);
+                                                });
+                                            }
                                             const powerOn = !this.power ? await this.xboxLocalApi.powerOn() : false;
                                             break;
                                     }
